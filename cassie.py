@@ -94,47 +94,84 @@ class MaximumLikelihoodEstimator():
 
 
 class Model():
+    """A class for representing statistical models through functions."""
 
 
     def __init__(self, modelfunc):
+        """
+        modelfunc : Callable
+        A callable which, given its parameters and arguments, returns the probability of observing
+        those arguments for those parameters according to the model it represents.
+        """
         
-        update_wrapper(self, modelfunc)
+        update_wrapper(self, modelfunc) #Cleanly wrap the model function
+
         self._func = modelfunc
-        argspec = inspect.getfullargspec(modelfunc)
+
+        argspec = inspect.getfullargspec(modelfunc) #Function inspection - get parameter names and defaults
         self._args = argspec.args[:]
         self._argcount = len(self._args)
         self._defaults = list(argspec.defaults[:])
-        diff = self._argcount - len(self._defaults)
+
+        diff = self._argcount - len(self._defaults) # find the number of arguments not associated to a default value
         if diff:
-            self._defaults = [None]*diff + self._defaults
-        self._fixed_args = {}
-        self._bounds = {arg:(None, None) for arg in self._args}
+            self._defaults = [None]*diff + self._defaults # And associate them with a null default value in the Model object
+        
+        self._fixed_args = {} #Initially none of the model's argument values are fixed
+        self._bounds = {arg:(None, None) for arg in self._args} #And no bounds are placed on the possible values
 
 
     def fix_params(self, **kwargs):
+        """
+        Method to fix the values of parameters in the model based on the parameter name.
+        
+        kwargs
+        The names of parameters, and the values these parameters should be fixed at. 
+        If a value of None is given, the argument with that name will be free.
+        """
 
-        self._fixed_args.update(kwargs)
+        self._fixed_args.update(kwargs) #Update internal dictionary of fixed arguments
+        
+        #Collecting a list of all parameters to be released
         released_params = []
         for arg in self._fixed_args:
             if self._fixed_args[arg] is None:
                 released_params.append(arg)
         
+        #And removing them from the fixed argument dictionary
         for arg in released_params:
             del self._fixed_args[arg]
 
 
     def set_defaults(self, **kwargs):
+        """
+        Method to set a default value for a parameter of the model based on the parameter name.
+
+        kwargs
+        The default value an argument of the given name should assume.
+        """
 
         for key in kwargs:
             self._defaults[self._args.index(key)] = kwargs[key]
 
     
     def set_bounds(self, **kwargs):
+        """
+        Method to place bounds on the allowed values of a model parameter based on the parameter name.
+
+        kwargs
+        Tuples of the form (min, max) where min and max are the minimum and maximum value the named
+        parameter is allowed to assume, respectively.
+        """
         self._bounds.update(kwargs)
 
 
     def __call__(self, *args):
+        """
+        Call the underlying model function using a combination of supplied and fixed arguments.
+        """
 
+        # Check that the correct total number of arguments has been supplied
         if len(args) + len(self._fixed_args) != self._argcount:
             raise ValueError("""Unexpected number of arguments:\n
                             {0} fixed through fix_params() method and {1} provided in this call,
@@ -143,6 +180,7 @@ class Model():
         indices = list(range(self._argcount))
         complete_args = [np.inf]*self._argcount
 
+        # Compile a list of all argument values
         for parname in self._fixed_args:
             idx = self._args.index(parname)
             indices.remove(idx)
@@ -151,22 +189,37 @@ class Model():
         for idx, arg in enumerate(args):
             complete_args[indices[idx]] = arg
 
+        # Pass the arguments to the underlying function and return the value
         return self._func(*complete_args)
 
 
     def get_param_names(self):
+        """
+        Returns a list of all named parameters associated with this model.
+        """
         return self._args[:]
 
 
     def get_param_defaults(self):
+        """
+        Returns a dictionary mapping each named parameter associated with this model to its default value.
+        If there is no default, the value will be None.
+        """
         return dict(zip(self._args[:], self._defaults[:]))
 
 
     def get_fixed_params(self):
+        """
+        Returns a dictionary mapping each fixed parameter of this model to the value at which it is fixed.
+        """
         return self._fixed_args.copy()
 
 
     def get_param_bounds(self):
+        """
+        Returns a dictionary mapping each bounded parameter of this
+        model to the tuple of values between which it is bound.
+        """
         return self._bounds.copy()
 
 
@@ -186,8 +239,7 @@ default_model.set_bounds(
     m0 = (0, 1000),
     m1 = (0, 1000),
     s0 = (1, 50),
-    s1 = (1, 50),
-    nbins = (1000,1000)
+    s1 = (1, 50)
     )
 
 default_model.fix_params(nbins = 1000)
