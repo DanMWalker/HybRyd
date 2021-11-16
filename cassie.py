@@ -10,14 +10,24 @@ from functools import update_wrapper
 
 
 def locate_edges(trace, val_threshold = 0.0005, grd_threshold = -0.0001):
-    med = np.median(trace)
+    """
+    Returns the indices of each falling edge in trace
+    """
+    med = np.median(trace) #Median taken to be approx. baseline value of trace
+
+    #If the gradient is a sufficiently large negative number
+    #and the value is sufficiently far from the baseline
+    #we are in a falling edge
     edge = (np.gradient(trace) < grd_threshold)*(trace < med - val_threshold)
+
+    #Identify all indices in the trace where we enter a falling edge
     nz = np.nonzero(edge)[0]
     edgelocs = nz[np.diff(nz, prepend= 0)>1]
     return edgelocs
 
 
 def locate_outliers(data, z = 1, axis = None):
+    """Returns the indices of outliers in data, identified by z-score"""
     mu = np.mean(data, axis = axis)
     sig = np.std(data, axis = axis)
     indices = np.nonzero(np.abs(data - mu)>z*sig)
@@ -25,10 +35,19 @@ def locate_outliers(data, z = 1, axis = None):
 
 
 class MaximumLikelihoodEstimator():
+    """
+    Class to perform maximum likelihood estimation of parameter values
+    given a model and corresponding data.
+    """
 
 
     def __init__(self, model):
+        """
+        model : callable
+        A Model object (or callable than can be wrapped by the Model class)
+        """
 
+        # Create a Model using the supplied callable if it is not already a Model
         if callable(model):
             if isinstance(model, Model):
                 self._m = model
@@ -38,18 +57,29 @@ class MaximumLikelihoodEstimator():
         else:
             raise TypeError("Hypothesis model must be callable.")
         
+        #Initialise data to None - must be assigned later
         self._data = None
 
 
     def estimate(self, **kwargs):
-        
+        """
+        Estimate the value of the named parameters, given the data assigned to the
+        MaximumLikelihoodEstimator. The value assigned to the named parameters given
+        as arguments is taken as an initial estimate of the maximum likelihood value.
+        """
+
+        # Check that data has been assigned to the estimator
         if (self._data is None) or (not np.shape(self._data)):
             raise ValueError("No data found: please provide data with the set_data() method before attempting to estimate parameters.")
         
+        #If no arguments are supplied, calculate an estimate based on the default values
+        #of the Model parameters
         if not kwargs:
             kwargs = self._m.get_param_defaults()
         
+        #Check fixed arguments of the model
         init_fixes = self._m.get_fixed_params()
+        #And mark any arguments not explicitly fixed as free
         to_release = {name:None for name in self._m.get_param_names() if name not in init_fixes}
 
         data_fix = {self._m.get_param_names()[0] : np.array(self._data).reshape((1, -1))}
