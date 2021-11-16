@@ -106,7 +106,13 @@ class MaximumLikelihoodEstimator():
         else:
             minimize_me = lambda args : -np.sum(np.log(self._m(*args)))
 
-        result = opt.minimize(minimize_me, init_params, bounds=param_bounds, jac='3-point') ### Should release parameters if this fails
+        try:
+            result = opt.minimize(minimize_me, init_params, bounds=param_bounds, jac='3-point') ### Should release parameters if this fails
+        except Exception as e:
+            self._m.fix_params(**to_release)
+            print("An exception occurred during likelihood optimisation:")
+            print(e)
+            return
         
         if return_shape:
             cov = self._m(*result.x)[1]
