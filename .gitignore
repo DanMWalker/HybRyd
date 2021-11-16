@@ -83,7 +83,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
-test_data/
+tests/test_data/
 
 # Translations
 *.mo
@@ -198,3 +198,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,python
+hybrid.nosync/
+.vscode/
