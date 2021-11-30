@@ -9,6 +9,8 @@ page = bkm.Panel(title="Instrument Rack",
 
 from instrument import Instrument
 
+from utils import insturment_manager
+
 rm = pv.ResourceManager()
 
 def refresh_instruments():
@@ -22,10 +24,10 @@ def refresh_instruments():
                 idn = candidate.query("*IDN?")
                 idn = idn.replace("*", "").replace("IDN", "").strip()
 
-                instruments.update({port: Instrument(
+                insturment_manager.update({port: Instrument(
                     candidate, port, *(idn.split(",")[:4]))})
 
-                visa_ports_display.children += [bkm.Div(text=port+"\t:\t"+str(instruments[port]))]
+                visa_ports_display.children += [bkm.Div(text=port+"\t:\t"+str(insturment_manager[port]))]
 
             except Exception as e:
                 log(str(e))
