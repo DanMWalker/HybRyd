@@ -1,3 +1,13 @@
+import pyvisa as pv
+from bokeh import models as bkm, layouts as bkl
+
+from dashboard.utils import push_message
+from dashboard.Instrument import Instrument
+
+instruments = {}
+
+rm = pv.ResourceManager()
+
 instrument_page = bkm.Panel(title="Instrument Rack",
                             child=bkl.grid([bkm.Div(text="Test 1")]))
 
