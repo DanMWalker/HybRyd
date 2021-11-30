@@ -1,9 +1,6 @@
-from bokeh import plotting as bkp, models as bkm, layouts as bkl
-from datetime import datetime
-import pyvisa as pv
 from os import path
 import json
-from bokeh.io import curdoc
+from pages.page_system_messages import log
 
 class Instrument:
     """A class for representing laboratory instruments within the
@@ -65,9 +62,9 @@ class Instrument:
                 self.config_found = False
 
                 # And add the exception to the message buffer
-                push_message(str(e), "a file selection widget")
+                log(str(e), "a file selection widget")
         else:
-            push_message(dst + " was not found.")
+            log(dst + " was not found.")
 
         # Report the success state of the config load at end of method call
         return self.config_found
