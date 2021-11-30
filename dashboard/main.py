@@ -6,12 +6,16 @@ from bokeh.io import curdoc
 import importlib
 import pkgutil
 
+print("Running main!")
+
 discovered_pages = [
-    importlib.import_module(name)
+    importlib.import_module("dashboard.pages."+name)
     for finder, name, ispkg
-    in pkgutil.iter_modules()
-    if name.startswith("pages.page_")
+    in pkgutil.iter_modules([path.join(".","dashboard","pages")])
+    if name.startswith("page_")
 ]
+
+print(discovered_pages)
 
 try:
     cfg_path = path.abspath(path.join(".", "config", "dashboard.cfg"))
