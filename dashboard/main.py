@@ -1,5 +1,7 @@
+import pyvisa
+
 instruments = {}
-rm = pv.ResourceManager()
+rm = pyvisa.ResourceManager()
 
 try:
     cfg_path = path.abspath(path.join(".", "config", "dashboard.cfg"))
