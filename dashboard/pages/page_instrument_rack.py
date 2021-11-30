@@ -13,8 +13,6 @@ instruments = {}
 
 rm = pv.ResourceManager()
 
-
-
 def refresh_instruments():
     ports = rm.list_resources()
     visa_ports_display.children = []
