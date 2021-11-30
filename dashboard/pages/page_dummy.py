@@ -1,8 +1,8 @@
 import pyvisa as pv
 from bokeh import models as bkm, layouts as bkl
 
-from page_system_messages import log
-from dashboard.instrument import Instrument
+from .page_system_messages import log
+from instrument import Instrument
 
 rm = pv.ResourceManager()
 
