@@ -1,15 +1,19 @@
 import pyvisa as pv
 from bokeh import models as bkm, layouts as bkl
 
-from page_system_messages import log
-from dashboard.instrument import Instrument
+from .page_system_messages import log
+
+page = bkm.Panel(title="Instrument Rack",
+                            child=bkl.grid([bkm.Div(text="Test 1")]))
+
+
+from instrument import Instrument
 
 instruments = {}
 
 rm = pv.ResourceManager()
 
-page = bkm.Panel(title="Instrument Rack",
-                            child=bkl.grid([bkm.Div(text="Test 1")]))
+
 
 def refresh_instruments():
     ports = rm.list_resources()

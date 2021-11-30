@@ -1,7 +1,7 @@
-from main import app_config
+
 from utils import timestamp
 from bokeh import layouts as bkl, models as bkm
-from main import notifications
+#from main import notifications, app_config
 
 message_buffer = bkl.column(
     [bkm.Div(text=timestamp()), bkm.Div(text="HybRyd Dashboard Startup")],
@@ -22,8 +22,8 @@ def log(msg, resolver=None):
         message_resolutions.children += [bkm.Div(text="")]
     else:
         message_resolutions.children += [resolver]
-    if len(message_buffer.children) > app_config["retained_messages"]:
-        message_buffer.children = message_buffer.children[-app_config["retained_messages"]:]
-        message_resolutions.children = message_resolutions.children[-app_config["retained_messages"]:]
+    #if len(message_buffer.children) > app_config["retained_messages"]:
+    #    message_buffer.children = message_buffer.children[-app_config["retained_messages"]:]
+    #    message_resolutions.children = message_resolutions.children[-app_config["retained_messages"]:]
 
-    notifications.update(text="New System Message(s)")
+    #notifications.update(text="New System Message(s)")
