@@ -6,7 +6,7 @@ from dashboard.instrument import Instrument
 
 rm = pv.ResourceManager()
 
-page = bkm.Panel(title="Instrument Rack",
+page = bkm.Panel(title="Dummy Instrument",
                             child=bkl.grid([bkm.Div(text="Test 1")]))
 
 def refresh_instruments():
