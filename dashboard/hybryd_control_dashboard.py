@@ -100,14 +100,14 @@ class Instrument:
     HYbRyd control dashboard, driven by prebuilt config files."""
 
     def __init__(
-        self, device, port, *spec
+        self, device, port, *idn
     ):
 
         ### THE FOLLOWING MEMBER VARIABLES ARE SET AT INSTANTIATION ###
 
         self.device = device  # The open VISA instrument
         self.port = port  # The port identifier the instrument is located at
-        self.spec = spec  # The identity of the instrument
+        self.idn = idn  # The identity of the instrument
 
         ### THE REMAINING MEMBER VARIABLES ARE SET FROM A CONFIG FILE ###
 
@@ -131,7 +131,7 @@ class Instrument:
         # This location should be relative to the installation directory of
         # the HybRyd Control Dashboard
         dst = path.abspath(path.join(
-            ".","drivers", *self.spec, "instrument.cfg"))
+            ".","drivers", *self.idn, "instrument.cfg"))
 
         # Check that the file exists!
         self.config_found = path.isfile(dst)
@@ -166,7 +166,7 @@ class Instrument:
         pass
 
     def __str__(self):
-        return "_".join(self.spec)
+        return "_".join(self.idn)
 
 
 t = bkm.Tabs(tabs=[instrument_page, monitor_page, VISA_page,
