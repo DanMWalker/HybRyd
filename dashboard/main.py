@@ -14,18 +14,6 @@ discovered_pages = [
     in pkgutil.iter_modules(pages.__path__, pages.__name__+".")
 ]
 
-try:
-    cfg_path = path.abspath(path.join(".", "config", "dashboard.cfg"))
-    with open(cfg_path) as app_config_file:
-        app_config = json.load(app_config_file)
-except Exception as e:
-    print("An exception occurred loading the external config file:\n", e)
-    print("Reverting to built-in default config.")
-    app_config = {
-        "retained_messages": 14,
-        "software_instruments": []
-    }
-
 t = bkm.Tabs(
     tabs=[page_module.page for page_module in discovered_pages],
     sizing_mode="stretch_both"
