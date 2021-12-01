@@ -1,5 +1,7 @@
+import enum
 from os import path
 import json
+import numpy as np
 from pages.page_system_messages import log
 
 class Instrument:
@@ -53,8 +55,8 @@ class Instrument:
                 # And assign the member variables of the Instrument object
                 self.desc = config['desc']
                 self.man = config['manual']
-                self.settable = config['settable']
-                self.gettable = config['gettable']
+                self.writeable = config['read']
+                self.readable = config['write']
 
             # If we cannot load the file and assign the variables of the Instrument
             except Exception as e:
@@ -62,7 +64,7 @@ class Instrument:
                 self.config_found = False
 
                 # And add the exception to the message buffer
-                log(str(e), "a file selection widget")
+                log(str(e))
         else:
             log(dst + " was not found.")
 
@@ -73,4 +75,37 @@ class Instrument:
         pass
 
     def __str__(self):
-        return "_".join(self.idn)
+        return "_".join(self.idn).replace(" ", "").replace("\t", "")
+
+    def write(self, **kwargs):
+
+        for key in kwargs:
+            if key in self.settable:
+                minval, maxval, cmd, n_args = self.settable[key]
+                x = kwargs[key]
+
+                if np.size(x) == n_args:
+
+                    if np.shape(x):
+                        submit = [min(max(minval[i], x[i]), maxval[i]) for i in range(n_args)]
+                        if any([s != x[i] for i, s in enumerate(submit)]):
+                            msg = "suppplied parameter "+key+"("+str(x)+") out of bounds, using bounded value: "+str(submit)
+                            log(msg)
+                        self.device.write(cmd.format(*submit))
+                    else:
+                        submit = min(max(minval, x), maxval)
+                        if submit != x:
+                            msg = "suppplied parameter "+key+"("+str(x)+") out of bounds, using bounded value: "+str(submit)
+                            log(msg)
+                        self.device.write(cmd.format(x))
+                
+                else:
+                    log(
+                        "Unexpected number of parameters passed to "+str(self)+" argument : "+key+
+                        " ("+n_args+" excpected, "+np.shape(kwargs[key])+" recieved)"
+                        )
+            else:
+                log("Parameter "+key+" not recognised as a writeable parameter for "+str(self))
+
+    def read(self, **kwargs):
+        pass
