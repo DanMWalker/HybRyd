@@ -5,22 +5,18 @@ from utils import insturment_manager
 
 page = bkm.Panel(title="Configure", child = bkm.Div(text=""))
 
-
-
-instrument_settings_grid = []
-
 def update_settings_grid():
-    instrument_settings_grid = []
-    print(insturment_manager)
+    instrument_settings_grid.children = []
     for key in insturment_manager.keys():
         instrument = insturment_manager[key]
         select = Select(value="Tunisia", options=["Tunisia", "Algeria", "Canada", "France"])
-        instrument_settings_grid.append([bkm.Div(text= str(instrument)), select])
+        instrument_settings_grid.children.append(bkl.row([bkm.Div(text= str(instrument), align='center'), select]))
 
-
-refresh_button = bkm.Button(label="Load Instruments", width=200)
+refresh_button = bkm.Button(label="Refresh", width=200)
 refresh_button.on_click(update_settings_grid)
 
+instrument_settings_grid = bkl.layout()
+
 page.update( 
-    child = bkl.column([refresh_button, bkl.layout(instrument_settings_grid)])
+    child = bkl.column([refresh_button,instrument_settings_grid])
     )
