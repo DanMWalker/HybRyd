@@ -21,7 +21,7 @@ t = bkm.Tabs(
     )
 
 def clear_notifications(attr, old, new):
-    if new == 3:
+    if t.tabs[new].title == "System Messages":
         notifications.update(text="")
 
 t.on_change("active", clear_notifications)
