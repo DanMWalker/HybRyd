@@ -23,11 +23,11 @@ class Instrument:
         self.desc = ""  # A brief description of the instrument
         self.man = ""  # A URL where a manual for the instrument can be found
 
-        self.settable = {}  # A dictionary mapping settable variable names to a tuple
+        self.writeable = {}  # A dictionary mapping writeable variable names to a tuple
         # of the form (min, max, command, command_arg_count)
 
-        self.gettable = {}  # A dictionary mapping gettable variable names to a tuple
-        # of the form (command, command_arg_count)
+        self.readable = {}  # A dictionary mapping readable variable names to commands
+        # reading the values of those variables
 
         self.config_found = False  # A flag indicating whether the config file
         # has been loaded successfully
@@ -80,8 +80,8 @@ class Instrument:
     def write(self, **kwargs):
 
         for key in kwargs:
-            if key in self.settable:
-                minval, maxval, cmd, n_args = self.settable[key]
+            if key in self.writeable:
+                minval, maxval, cmd, n_args = self.writeable[key]
                 x = kwargs[key]
 
                 if np.size(x) == n_args:
@@ -107,5 +107,12 @@ class Instrument:
             else:
                 log("Parameter "+key+" not recognised as a writeable parameter for "+str(self))
 
-    def read(self, **kwargs):
-        pass
+    def read(self, *args):
+
+        for par in args:
+            if par in self.readable:
+                retval = self.device.query(self.readable[par])
+            else:
+                log("Parameter "+par+" not recognised as a readable parameter for "+str(self))
+
+        return retval
