@@ -12,6 +12,10 @@ page = bkm.Panel(title="System Messages",
                           child=bkl.row([message_buffer, message_resolutions])
                           )
 
+from utils import app_config
+
+notifications = bkm.Div(text="", sizing_mode="stretch_both", align="end")
+
 def log(msg, resolver=None):
     print(msg)
     ts_element = bkm.Div(text=timestamp())
@@ -22,8 +26,8 @@ def log(msg, resolver=None):
         message_resolutions.children += [bkm.Div(text="")]
     else:
         message_resolutions.children += [resolver]
-    #if len(message_buffer.children) > app_config["retained_messages"]:
-    #    message_buffer.children = message_buffer.children[-app_config["retained_messages"]:]
-    #    message_resolutions.children = message_resolutions.children[-app_config["retained_messages"]:]
+    if len(message_buffer.children) > app_config["retained_messages"]:
+        message_buffer.children = message_buffer.children[-app_config["retained_messages"]:]
+        message_resolutions.children = message_resolutions.children[-app_config["retained_messages"]:]
 
-    #notifications.update(text="New System Message(s)")
+    notifications.update(text="New System Message(s)")

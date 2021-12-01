@@ -7,6 +7,7 @@ import importlib
 import pkgutil
 
 import pages
+from pages.page_system_messages import notifications
 
 discovered_pages = [
     importlib.import_module(name)
@@ -28,7 +29,6 @@ t.on_change("active", clear_notifications)
 
 page_header = bkm.Div(text="<h1>HybRyd Dashboard</h1>",
                       sizing_mode="stretch_both")
-notifications = bkm.Div(text="", sizing_mode="stretch_both", align="end")
 
 top_bar = bkl.row([page_header, notifications])
 
