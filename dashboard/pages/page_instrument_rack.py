@@ -27,7 +27,7 @@ def refresh_instruments():
                 insturment_manager.update({port: Instrument(
                     candidate, port, *(idn.split(",")[:4]))})
 
-                visa_ports_display.children += [bkm.Div(text=port+"\t:\t"+str(insturment_manager[port]))]
+                visa_ports_display.children += [bkm.Div(text=port+"\t:"+str(insturment_manager[port]))]
 
             except Exception as e:
                 log(str(e))
