@@ -31,17 +31,19 @@ t = bkm.Tabs(
     sizing_mode="stretch_both"
     )
 
+def clear_notifications(attr, old, new):
+    if new == 3:
+        notifications.update(text="")
+
+t.on_change("active", clear_notifications)
+
+
 page_header = bkm.Div(text="<h1>HybRyd Dashboard</h1>",
                       sizing_mode="stretch_both")
 notifications = bkm.Div(text="", sizing_mode="stretch_both", align="end")
 
 top_bar = bkl.row([page_header, notifications])
 
-def clear_notifications(attr, old, new):
-    if new == 3:
-        notifications.update(text="")
-
-t.on_change("active", clear_notifications)
 
 app_layout = bkl.grid(bkl.column(top_bar, t), sizing_mode="stretch_both")
 
