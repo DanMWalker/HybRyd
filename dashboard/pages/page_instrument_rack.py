@@ -27,11 +27,11 @@ def refresh_instruments():
                 insturment_manager.update({port: Instrument(
                     candidate, port, *(idn.split(",")[:4]))})
 
-                visa_ports_display.children += [bkm.Div(text=port+"\t:\t"+str(insturment_manager[port]))]
+                visa_ports_display.children += [bkm.Div(text=port+"\t:</br>"+str(insturment_manager[port]))]
 
             except Exception as e:
                 log(str(e))
-                visa_ports_display.children += [bkm.Div(text=port+"\t:\t"+str(e))]
+                visa_ports_display.children += [bkm.Div(text=port+"\t:</br>"+str(e))]
     else:
         message = "No instrument ports were found. Check power and data connections?"
         log(message)

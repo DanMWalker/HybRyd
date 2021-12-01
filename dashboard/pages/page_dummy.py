@@ -21,11 +21,11 @@ def refresh_instruments():
             return
    
     candidate = dummy_inst()
-    port = '0'
-    idn = 'DUMMYINST'
+    port = 'VIRTUAL::DUMMY::DEVICE'
+    idn = ['DUMMYINST']
 
     insturment_manager.update({port: Instrument(candidate, port, *idn)})
-    visa_ports_display.children += [bkm.Div(text=port+"\t:\t"+str(insturment_manager[port]))]
+    visa_ports_display.children += [bkm.Div(text=port+"\t:</br>"+str(insturment_manager[port]))]
 
 
 visa_refresh_button = bkm.Button(label="Load Instruments", width=200)
