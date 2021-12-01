@@ -1,7 +1,6 @@
 
 from utils import timestamp
 from bokeh import layouts as bkl, models as bkm
-#from main import notifications, app_config
 
 message_buffer = bkl.column(
     [bkm.Div(text=timestamp()), bkm.Div(text="HybRyd Dashboard Startup")],
