@@ -29,8 +29,12 @@ class Instrument:
         self.readable = {}  # A dictionary mapping readable variable names to commands
         # reading the values of those variables
 
+        self.widget_spec = "" # A json object which can be parsed as a layout of 
+        # elements for the control widget for this instrument
+
         self.config_found = False  # A flag indicating whether the config file
         # has been loaded successfully
+
 
     def load_config(self):
 
@@ -109,10 +113,11 @@ class Instrument:
 
     def read(self, *args):
 
+        retval = []
         for par in args:
             if par in self.readable:
-                retval = self.device.query(self.readable[par])
+                retval.append(self.device.query(self.readable[par]))
             else:
                 log("Parameter "+par+" not recognised as a readable parameter for "+str(self))
 
-        return retval
+        return tuple(retval)
