@@ -61,6 +61,7 @@ class Instrument:
                 self.man = config['manual']
                 self.writeable = config['read']
                 self.readable = config['write']
+                self.widget_spec = config['widget']
 
             # If we cannot load the file and assign the variables of the Instrument
             except Exception as e:
