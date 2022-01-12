@@ -6,6 +6,7 @@ import numpy as np
 from data_manager import DataManager
 from instrument_widget import InstrumentWidget
 from pages.page_system_messages import log
+from functools import partial
 
 
 class Instrument:
@@ -46,7 +47,7 @@ class Instrument:
         # This location should be relative to the installation directory of
         # the HybRyd Control Dashboard
         dst = path.abspath(path.join(
-            ".","dashboard","drivers", *self.idn, "instrument.cfg"))
+            ".","dashboard", "drivers", *self.idn, "instrument.cfg"))
 
         # Check that the file exists!
         self.config_found = path.isfile(dst)
@@ -113,7 +114,7 @@ class Instrument:
         keywords = ("init", "on_change", "x", "y", "z")
         cmd_types = ("inst", "query", "read", "write", "proc", "exec")
 
-        def method(attr="", old="", new=""):
+        def method(attr, old, new):
 
             to_stream = {}
             last_query = None
@@ -168,6 +169,8 @@ class Instrument:
 
             return to_stream
 
+        if not "on_change" in command_set:
+            method = partial(method, "", "", "")
         return method
 
     def __str__(self):
