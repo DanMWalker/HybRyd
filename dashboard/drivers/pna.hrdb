@@ -1,0 +1,284 @@
+{
+    "manual":"",
+    "desc":"",
+    "query_type": "binary",
+    "init": [
+        "FORM:DATA REAL,64",
+        "OUTP:STATE OFF",
+        "SENS:BWID:RES 600000",
+        "SENS:BWID:TRACK OFF",
+        "DISP:ENAB OFF",
+        "CALC:PAR:DEL:ALL",
+        "CALC:PAR:DEF:EXT 'measure','S21'",
+        "CALC:PAR:SEL 'measure',fast",
+        "SENS:SWE:SPE FAST"
+    ],
+    "settings": {
+        "Output": {
+            "value": false,
+            "options": [
+                true,
+                false
+            ],
+            "option_type": "bool",
+            "on_change": [
+                {
+                    "inst": "OUTP:STATE {:d}"
+                }
+            ]
+        },
+        "Fast Trace": {
+            "value": true,
+            "options": [
+                true,
+                false
+            ],
+            "option_type": "bool",
+            "on_change": [
+                {
+                    "inst": "CALC:PAR:SEL 'measure',fast",
+                    "condition": "{}"
+                },
+                {
+                    "inst": "SENS:SWE:SPE FAST",
+                    "condition": "{}"
+                },
+                {
+                    "inst": "CALC:PAR:SEL 'measure'",
+                    "condition": "not {}"
+                },
+                {
+                    "inst": "SENS:SWE:SPE NORM",
+                    "condition": "not {}"
+                }
+            ]
+        },
+        "Display": {
+            "value": false,
+            "options": [
+                true,
+                false
+            ],
+            "option_type": "bool",
+            "on_change": [
+                {
+                    "inst": "DISP:ENAB {:d}"
+                }
+            ]
+        },
+        "Measurement Type": {
+            "value": "S21",
+            "options": [
+                "S11",
+                "S12",
+                "S21",
+                "S22"
+            ],
+            "option_type": "set",
+            "on_change": [
+                {
+                    "inst": "CALC:PAR:MOD '{}'"
+                }
+            ]
+        },
+        "Frequency Start": {
+            "value": 1e7,
+            "options": [
+                1e7,
+                43.5e9
+            ],
+            "option_type": "range",
+            "on_change": [
+                {
+                    "inst": "SENS:FREQ:STAR {}"
+                }
+            ]
+        },
+        "Frequency Stop": {
+            "value": 43.5e9,
+            "options": [
+                1e7,
+                43.5e9
+            ],
+            "option_type": "range",
+            "on_change": [
+                {
+                    "inst": "SENS:FREQ:STOP {}"
+                }
+            ]
+        },
+        "Auto Step": {
+            "value": true,
+            "options": [
+                true,
+                false
+            ],
+            "option_type": "bool",
+            "disable": "settings:Frequency Step",
+            "on_change": [
+                {
+                    "inst": "SENS:FREQ:CENT:STEP:AUTO {:d}"
+                }
+            ]
+        },
+        "Frequency Step": {
+            "value": 4e7,
+            "options": [
+                1,
+                1e9
+            ],
+            "option_type": "range",
+            "on_change": [
+                {
+                    "inst": "SENS:FREQ:CENT:STEP {}"
+                }
+            ]
+        },
+        "Power": {
+            "value": -10,
+            "options": [
+                -30,
+                30
+            ],
+            "option_type": "range",
+            "on_change": [
+                {
+                    "inst": "SOUR:POW {}"
+                }
+            ]
+        },
+        "Averaging": {
+            "value": true,
+            "options": [
+                true,
+                false
+            ],
+            "option_type": "bool",
+            "enable": "settings:Averages",
+            "on_change": [
+                {
+                    "inst": "SENS:AVER:STAT {:d}"
+                }
+            ]
+        },
+        "Averages": {
+            "value": 50,
+            "options": "int+",
+            "option_type": "int",
+            "on_change": [
+                {
+                    "inst": "SENS:AVER:COUN {}"
+                }
+            ]
+        },
+        "IF Bandwidth": {
+            "value": 600000,
+            "options": [
+                1,
+                600000
+            ],
+            "option_type": "range",
+            "on_change": [
+                {
+                    "inst": "SENS:BWID:RES {}"
+                }
+            ]
+        }
+    },
+    "monitors": {
+        "Log Magnitude": {
+            "type": "plot",
+            "style": "line",
+            "x": [
+                {
+                    "inst": "CALC:X:VAL?"
+                }
+            ],
+            "y": [
+                {
+                    "inst": "CALC:DATA? SDATA"
+                },
+                {
+                    "proc": "lambda x : np.log(np.abs(x[::2] + 1j*x[1::2]))"
+                }
+            ],
+            "xlabel":"Frequency",
+            "ylabel":"log|S21|",
+            "xunit":"Hz",
+            "yunit":"dB"
+        },
+        "Phase": {
+            "type": "plot",
+            "style": "line",
+            "x": [
+                {
+                    "inst": "CALC:X:VAL?"
+                }
+            ],
+            "y": [
+                {
+                    "inst": "CALC:DATA? SDATA"
+                },
+                {
+                    "proc": "lambda x : np.arctan2(x[::2], x[1::2])"
+                }
+            ],
+            "xlabel":"Frequency",
+            "ylabel":"Phase",
+            "xunit":"Hz",
+            "yunit":"rad."
+        },
+        "Polar": {
+            "type": "plot",
+            "style": "line",
+            "init": [
+                {
+                    "inst": "CALC:DATA? SDATA"
+                }
+            ],
+            "x": [
+                {
+                    "proc": "lambda x : x[::2]"
+                }
+            ],
+            "y": [
+                {
+                    "proc": "lambda x : x[1::2]"
+                }
+            ],
+            "xlabel":"Re(S21)",
+            "ylabel":"Im(S21)",
+            "xunit":"",
+            "yunit":""
+        },
+        "Complex": {
+            "type": "plot",
+            "style": "line",
+            "x": [
+                {
+                    "inst": "CALC:X:VAL?"
+                }
+            ],
+            "y": [
+                {
+                    "inst": "CALC:DATA? SDATA"
+                },
+                {
+                    "proc": "lambda x : x[::2] + 1j*x[1::2]"
+                }
+            ],
+            "xlabel":"Frequency",
+            "xunit":"Hz",
+            "ylabel":"S21",
+            "yunit":""
+        }
+    },
+    "layout": [
+        "monitors:Log Magnitude",
+        "settings:Measurement Type",
+        [
+            "settings:Output",
+            "settings:Fast Trace"
+        ]
+    ]
+}

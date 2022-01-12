@@ -9,11 +9,13 @@ page = bkm.Panel(title="Instrument Rack",
 
 from instrument import Instrument
 
-from utils import insturment_manager
-
 rm = pv.ResourceManager()
 
+visa_refresh_button = bkm.Button(label="Load Instruments", width=200)
+
 def refresh_instruments():
+    visa_refresh_button.disabled = True
+
     ports = rm.list_resources()
     visa_ports_display.children = []
     if ports:
@@ -22,12 +24,12 @@ def refresh_instruments():
                 candidate = rm.open_resource(port)
 
                 idn = candidate.query("*IDN?")
-                idn = idn.replace("*", "").replace("IDN", "").strip()
+                idn = idn.replace("*", "").replace("IDN", "").replace(".", "-").strip()
 
-                insturment_manager.update({port: Instrument(
-                    candidate, port, *(idn.split(",")[:4]))})
+                inst = Instrument(candidate, port, *(idn.split(",")[:4]))
 
-                visa_ports_display.children += [bkm.Div(text=port+"\t:</br>"+str(insturment_manager[port]))]
+                visa_ports_display.children += [inst.instrument_widget.generate()]
+                #[bkm.Div(text=port+"\t:</br>"+str(inst))]
 
             except Exception as e:
                 log(str(e))
@@ -35,11 +37,12 @@ def refresh_instruments():
     else:
         message = "No instrument ports were found. Check power and data connections?"
         log(message)
+    
+    visa_refresh_button.disabled = False
 
 
-
-visa_refresh_button = bkm.Button(label="Load Instruments", width=200)
 visa_refresh_button.on_click(refresh_instruments)
+
 visa_ports_display = bkl.column([bkm.Div(text="", width=1200)], sizing_mode="stretch_both")
 
 page.update(
