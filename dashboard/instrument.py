@@ -46,7 +46,7 @@ class Instrument:
         # This location should be relative to the installation directory of
         # the HybRyd Control Dashboard
         dst = path.abspath(path.join(
-            ".", "drivers", *self.idn, "instrument.cfg"))
+            ".","dashboard","drivers", *self.idn, "instrument.cfg"))
 
         # Check that the file exists!
         self.config_found = path.isfile(dst)
