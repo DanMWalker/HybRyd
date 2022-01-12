@@ -1,12 +1,11 @@
 import numpy as np
-from dashboard.instrument import Instrument
 from copy import deepcopy
 from bokeh import layouts as bkl, models as bkm, plotting as bkp
 
 
 class InstrumentWidget:
 
-    def __init__(self, instrument: Instrument) -> None:
+    def __init__(self, instrument) -> None:
         self.inst = instrument
         self.linked_enable = {}
         self.linked_disable = {}
@@ -120,7 +119,7 @@ class InstrumentWidget:
                         )
 
                         enable_rtm = bkm.Toggle(
-                            title="Enable Continuous Monitoring",
+                            label="Enable Continuous Monitoring",
                             active=False
                         )
                         

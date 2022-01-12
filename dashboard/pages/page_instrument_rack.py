@@ -1,7 +1,7 @@
 import pyvisa as pv
 from bokeh import models as bkm, layouts as bkl
 
-from dashboard.data_manager import DataManager
+from data_manager import DataManager
 
 from .page_system_messages import log
 
@@ -29,6 +29,7 @@ def refresh_instruments():
                 idn = idn.replace("*", "").replace("IDN", "").replace(".", "-").strip()
 
                 inst = Instrument(candidate, dm, *(idn.split(",")[:4]))
+                inst.load_config()
 
                 visa_ports_display.children += [inst.instrument_widget.generate()]
                 #[bkm.Div(text=port+"\t:</br>"+str(inst))]
@@ -36,7 +37,7 @@ def refresh_instruments():
             except Exception as e:
                 log("Exception encountered opening port "+port+" : "+str(e))
                 log("Provide a driver file?", bkm.FileInput())
-                visa_ports_display.children += [bkm.Div(text=port+"\t:</br>"+str(e))]
+                #visa_ports_display.children += [bkm.Div(text=port+"\t:</br>"+str(e))]
     else:
         message = "No instrument ports were found. Check power and data connections?"
         log(message)

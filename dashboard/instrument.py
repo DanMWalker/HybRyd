@@ -3,8 +3,8 @@ from os import path
 import json
 
 import numpy as np
-from dashboard.data_manager import DataManager
-from dashboard.instrument_widget import InstrumentWidget
+from data_manager import DataManager
+from instrument_widget import InstrumentWidget
 from pages.page_system_messages import log
 
 
@@ -13,7 +13,7 @@ class Instrument:
     HybRyd control dashboard, driven by prebuilt config files."""
 
     def __init__(
-        self, device, data_manager : DataManager, *idn: tuple(str)
+        self, device, data_manager : DataManager, *idn
     ):
 
         ### THE FOLLOWING MEMBER VARIABLES ARE SET AT INSTANTIATION ###
@@ -56,7 +56,7 @@ class Instrument:
             try:
                 # Try to load the config file as a JSON object
                 with open(dst) as config_file:
-                    config = json.loads(config_file)
+                    config = json.load(config_file)
                     self.config = deepcopy(config)
 
                     if "baud_rate" in config:
@@ -113,15 +113,10 @@ class Instrument:
         keywords = ("init", "on_change", "x", "y", "z")
         cmd_types = ("inst", "query", "read", "write", "proc", "exec")
 
-        def method(*args):
+        def method(attr="", old="", new=""):
 
             to_stream = {}
             last_query = None
-
-            if args:
-                attr, old, new = args
-            else:
-                attr, old, new = "", "", ""
 
             for k in keywords:
                 if k in command_set:
