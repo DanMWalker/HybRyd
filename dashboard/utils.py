@@ -17,6 +17,6 @@ except Exception as e:
     print("An exception occurred loading the external config file:\n", e)
     print("Reverting to built-in default config.")
     app_config = {
-        "retained_messages": 14,
+        "retained_messages": 1400,
         "software_instruments": []
     }
