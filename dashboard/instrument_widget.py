@@ -123,31 +123,37 @@ class InstrumentWidget:
                             active=False
                         )
                         
+                        def polling_methods(element):
 
-                        def poll():
-                            to_stream = self.inst.operations[element]()
-                            datalen = len(to_stream["x"]) if "x" in to_stream else 0
-                            if datalen > 0:
-                                cds.stream(to_stream, datalen)
+                            def poll():
+                                to_stream = self.inst.operations[element]()
+                                datalen = len(to_stream["x"]) if "x" in to_stream else 0
+                                if datalen > 0:
+                                    cds.stream(to_stream, datalen)
 
-                        def enable_poll(old, new, attr):
-                            if new:
-                                refresh_rate_input.disabled = False
-                                periodic_poll = bkp.curdoc().add_periodic_callback(poll, refresh_rate_input.value)
-                                self.periodic_polls.update({element:periodic_poll})
-                            else:
-                                refresh_rate_input.disabled = True
-                                bkp.curdoc().remove_periodic_callback(self.periodic_polls[element])
-                                self.periodic_polls.update({element:None})
+                            def enable_poll(old, new, attr):
+                                if new:
+                                    refresh_rate_input.disabled = False
+                                    periodic_poll = bkp.curdoc().add_periodic_callback(poll, refresh_rate_input.value)
+                                    self.periodic_polls.update({element:periodic_poll})
+                                else:
+                                    refresh_rate_input.disabled = True
+                                    bkp.curdoc().remove_periodic_callback(self.periodic_polls[element])
+                                    self.periodic_polls.update({element:None})
+
+                            def update_poll_interval(old, new, attr):
+                                cd = bkp.curdoc()
+                                if old != new and self.periodic_polls[element] is not None:
+                                    cd.remove_periodic_callback(self.periodic_polls[element])
+                                    new_poll = cd.add_periodic_callback(poll, new)
+                                    self.periodic_polls.update({element:new_poll})
+                            
+                            return poll, enable_poll, update_poll_interval
                         
+                        poll, enable_poll, update_poll_interval = polling_methods(element)
                         enable_rtm.on_change("active", enable_poll)
 
-                        def update_poll_interval(old, new, attr):
-                            cd = bkp.curdoc()
-                            if old != new and self.periodic_polls[element] is not None:
-                                cd.remove_periodic_callback(self.periodic_polls[element])
-                                new_poll = cd.add_periodic_callback(poll, new)
-                                self.periodic_polls.update({element:new_poll})
+                        
                         
                         refresh_rate_input.on_change("value", update_poll_interval)
 
